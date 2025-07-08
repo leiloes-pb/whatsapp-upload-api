@@ -1,19 +1,25 @@
-// Teste básico primeiro - versão CommonJS
-module.exports = async function handler(req, res) {
+export default function handler(req, res) {
   try {
-    console.log('Função executada');
+    console.log('Função executada - método:', req.method);
     
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Apenas POST permitido' });
+    // Headers CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
     }
-
+    
     return res.status(200).json({ 
       message: 'API funcionando!', 
       method: req.method,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      url: req.url
     });
+    
   } catch (error) {
     console.error('Erro na função:', error);
-    return res.status(500).json({ error: 'Erro interno' });
+    return res.status(500).json({ error: 'Erro interno', details: error.message });
   }
 }
